@@ -1,4 +1,4 @@
-# ScurvyScript: A Gen Z High-Seas Programming Language
+# ScurvyScript
 
 Ahoy, matey! Welcome to ScurvyScript, a whimsical programming language that blends the humor of Gen Z with the adventurous spirit of the high seas. This project is a Python-based interpreter for ScurvyScript, allowing ye to write code that's as fun as plunderin' treasure.
 
