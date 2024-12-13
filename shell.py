@@ -7,12 +7,15 @@ while True:
     tokenizer = Lexer(text)
     tokens = tokenizer.tokenize()
 
+    print(tokens)
+
     parser = Parser(tokens)
-
     tree = parser.parse()
+    
+    print(tree)
 
-    interpreter = Interpreter(tree)
+    # interpreter = Interpreter(tree)
 
-    result = interpreter.interpret()
+    # result = interpreter.interpret()
 
-    print(result)
+    # print(result)

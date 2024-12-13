@@ -7,6 +7,10 @@ class Parser():
     def factor(self):
         if self.token.type == "INT" or self.token.type == 'FLT':
             return self.token
+        elif self.token.value == '(':
+            self.move()
+            expression = self.expression()
+            return expression
 
     def term(self):
         left_node = self.factor()
@@ -29,10 +33,28 @@ class Parser():
             left_node = [left_node, operation, right_node]
 
         return left_node
+    
+    def variable(self):
+        if self.token.type == 'VAR':
+            return self.token
+    
+    def statement(self):
+        if self.token.type == 'DECL':
+            self.move()
+            left_node = self.variable()
+            self.move()
+            if self.token.type == '=':
+                operation = self.token
+                self.move()
+                right_node = self.expression()
 
+                return [left_node, operation, right_node]
+
+        elif self.token.type == 'INT' or self.token.type == 'FLT' or self.token.type == 'OP':
+            return self.expression()
 
     def parse(self):
-        return self.expression()
+        return self.statement()
 
 
     def move(self):
