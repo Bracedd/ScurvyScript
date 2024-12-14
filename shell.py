@@ -8,18 +8,18 @@ base = Data()
 
 while True:
     text = input(("ScurvyScript: "))
+ 
+ 
     tokenizer = Lexer(text)
     tokens = tokenizer.tokenize()
-
-
     parser = Parser(tokens)
     tree = parser.parse()
 
     print(tree)
     
 
-    interpreter = Interpreter(tree, base)
+    # interpreter = Interpreter(tree, base)
 
-    result = interpreter.interpret()
+    # result = interpreter.interpret()
 
-    print(result)
+    # print(result)
