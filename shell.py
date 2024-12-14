@@ -14,6 +14,8 @@ while True:
 
     parser = Parser(tokens)
     tree = parser.parse()
+
+    print(tree)
     
 
     interpreter = Interpreter(tree, base)

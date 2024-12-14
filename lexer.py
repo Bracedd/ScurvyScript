@@ -68,4 +68,3 @@ class Lexer:
         if self.idx < len(self.text):
             self.char = self.text[self.idx]
 
-
