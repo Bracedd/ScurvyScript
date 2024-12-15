@@ -37,4 +37,11 @@ class Comparison(Token):
 class Reserved(Token):
     def __init__(self, value):
         super().__init__('RSV',value)
-     
+
+class Print(Token):
+    def __init__(self, value):
+        super().__init__('PRINT', value)
+
+class String(Token):
+    def __init__(self, value):
+        super().__init__('STR', value)

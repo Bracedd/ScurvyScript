@@ -1,3 +1,5 @@
+from tokens import Print, String, Variable, Operation, Declaration
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -8,7 +10,7 @@ class Parser:
         if self.token is None:
             return None
 
-        if self.token.type in ("INT", "FLT"):
+        if self.token.type in ("INT", "FLT", "STR"):
             value = self.token
             self.move()
             return value
@@ -70,7 +72,6 @@ class Parser:
             action = self.statement()
             return condition, action
 
-
     def if_statements(self):
         conditions = []
         actions = []
@@ -79,12 +80,12 @@ class Parser:
         conditions.append(if_statement[0])
         actions.append(if_statement[1])
 
-        while self.token and self.token.value == 'but_if':  # Check if self.token is not None
+        while self.token and self.token.value == 'but_if':
             if_statement = self.if_statement()
             conditions.append(if_statement[0])
             actions.append(if_statement[1])
 
-        if self.token and self.token.value == 'by_chance':  # Check if self.token is not None
+        if self.token and self.token.value == 'by_chance':
             self.move()
             self.move()
             else_action = self.statement()
@@ -93,18 +94,15 @@ class Parser:
 
         return [conditions, actions]
 
-
     def comp_expression(self):
         left_node = self.expression()
-        while self.token and self.token.type == 'COMP':  # Check if self.token is not None
+        while self.token and self.token.type == 'COMP':
             operator = self.token
             self.move()
             right_node = self.expression()
             left_node = [left_node, operator, right_node]
 
         return left_node
-
-
 
     def boolean_expression(self):
         left_node = self.comp_expression()
@@ -140,7 +138,7 @@ class Parser:
         if self.token is None:
             return None
 
-        if self.token.type == 'DECL':
+        if isinstance(self.token, Declaration):
             self.move()
             left_node = self.variable()
             if left_node is None:
@@ -149,13 +147,24 @@ class Parser:
                 operation = self.token
                 self.move()
                 right_node = self.boolean_expression()
-                return [left_node, operation, right_node]
+                return [Declaration('yeet'), left_node, operation, right_node]
 
-        elif self.token.type in ("INT", "FLT", "OP") or self.token.value == 'nay':
+        elif self.token.type in ("INT", "FLT", "OP", "STR") or self.token.value == 'nay':
             return self.boolean_expression()
         
         elif self.token.value == 'if':
             return [self.token, self.if_statements()]
+        
+        elif isinstance(self.token, Print):
+            print_token = self.token
+            self.move()
+            if self.token and self.token.value == '(':
+                self.move()
+                expression = self.boolean_expression()
+                if self.token and self.token.value == ')':
+                    self.move()
+                    return [print_token, expression]
+            return None
 
         return None
 
