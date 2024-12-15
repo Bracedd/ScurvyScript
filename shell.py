@@ -18,8 +18,8 @@ while True:
     print(tree)
     
 
-    # interpreter = Interpreter(tree, base)
+    interpreter = Interpreter(tree, base)
 
-    # result = interpreter.interpret()
+    result = interpreter.interpret()
 
-    # print(result)
+    print(result)

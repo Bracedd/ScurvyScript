@@ -33,4 +33,8 @@ class Boolean(Token):
 class Comparison(Token):
     def __init__(self, value):
         super().__init__('COMP',value)
+
+class Reserved(Token):
+    def __init__(self, value):
+        super().__init__('RSV',value)
      

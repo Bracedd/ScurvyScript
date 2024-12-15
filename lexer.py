@@ -1,4 +1,4 @@
-from tokens import Token, Integer, Float, Operation, Declaration, Variable, Boolean, Comparison
+from tokens import Token, Integer, Float, Operation, Declaration, Variable, Boolean, Comparison, Reserved
 
 # Grammar Rule:
 # Declaration = yeet
@@ -10,8 +10,9 @@ class Lexer:
     stopwords = [" "]
     declarations = ['yeet']
     boolean = ["with", "or", "nay"]  
-    comparisons = ['>', '<', '>=', '<=', '==']
-    specialCharacters = "<>="
+    comparisons = ['>', '<', '>=', '<=', '?=']
+    specialCharacters = "<>=?"
+    reserved = ['if', 'but_if', 'by_chance', 'bet']
 
     def __init__(self, text):
         self.text = text
@@ -41,6 +42,9 @@ class Lexer:
                 
                 elif word in Lexer.boolean:
                     self.token = Boolean(word)
+                
+                elif word in Lexer.reserved:
+                    self.token = Reserved(word)
 
                 else:
                     self.token = Variable(word)
