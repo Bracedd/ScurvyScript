@@ -1,63 +1,86 @@
-from tokens import Token, Integer, Float, String, Operation, Declaration, Variable, Boolean, Comparison, Reserved, Print
+from tokens import Doubloon, Piece8, Operation, Declaration, Booty, Boolean, Comparison, Reserved
+
+# hoist ye_flag = 50
 
 class Lexer:
+    # while <expr> do <statement>
     digits = "0123456789"
     letters = "abcdefghijklmnopqrstuvwxyz"
-    operations = "+-/*=()"
-    reserved_keywords = {"print": Print, "if": Reserved, "but_if": Reserved, "by_chance": Reserved, "bet": Reserved, "yeet": Declaration}
+    operations = "+-/*()="
+    stopwords = [" "]
+    declarations = ["hoist"]
+    boolean = ["and", "or", "not"]
     comparisons = [">", "<", ">=", "<=", "?="]
+    specialCharacters = "><=?"
+    reserved = ["if", "elif", "else", "do", "while", "parley"]
 
     def __init__(self, text):
         self.text = text
         self.idx = 0
         self.tokens = []
-        self.char = self.text[self.idx] if self.text else None
-
+        self.char = self.text[self.idx]
+        self.token = None
+    
     def tokenize(self):
-        while self.char:
-            if self.char in self.digits:
-                self.tokens.append(self.extract_number())
-            elif self.char in self.letters:
-                self.tokens.append(self.extract_word())
-            elif self.char in self.operations:
-                self.tokens.append(Operation(self.char))
-                self.advance()
-            elif self.char in [' ', '\t', '\n']:
-                self.advance()  # Skip whitespace
-            elif self.char == '"':
-                self.tokens.append(self.extract_string())
-            else:
-                raise ValueError(f"Unexpected character: {self.char}")
+        while self.idx < len(self.text):
+            if self.char in Lexer.digits:
+                self.token = self.extract_number()
+            
+            elif self.char in Lexer.operations:
+                self.token = Operation(self.char)
+                self.move()
+            
+            elif self.char in Lexer.stopwords:
+                self.move()
+                continue
+
+            elif self.char in Lexer.letters:
+                word = self.extract_word()
+
+                if word in Lexer.declarations:
+                    self.token = Declaration(word)
+                elif word in Lexer.boolean:
+                    self.token = Boolean(word)
+                elif word in Lexer.reserved:
+                    self.token = Reserved(word)
+                elif word == "parley":
+                    self.token = Reserved(word)
+                else:
+                    self.token = Booty(word)
+            
+            elif self.char in Lexer.specialCharacters:
+                comparisonOperator = ""
+                while self.char in Lexer.specialCharacters and self.idx < len(self.text):
+                    comparisonOperator += self.char
+                    self.move()
+                
+                self.token = Comparison(comparisonOperator)
+            
+            self.tokens.append(self.token)
+        
         return self.tokens
 
     def extract_number(self):
-        num = ""
-        is_float = False
-        while self.char and (self.char in self.digits or (self.char == "." and not is_float)):
+        number = ""
+        isFloat = False
+        while (self.char in Lexer.digits or self.char == ".") and (self.idx < len(self.text)):
             if self.char == ".":
-                is_float = True
-            num += self.char
-            self.advance()
-        return Float(num) if is_float else Integer(num)
-
+                isFloat = True
+            number += self.char
+            self.move()
+        
+        return Doubloon(number) if not isFloat else Piece8(number)
+    
     def extract_word(self):
         word = ""
-        while self.char and self.char in self.letters:
+        while self.char in Lexer.letters and self.idx < len(self.text):
             word += self.char
-            self.advance()
-        if word in self.reserved_keywords:
-            return self.reserved_keywords[word](word)
-        return Variable(word)
-
-    def extract_string(self):
-        string = ""
-        self.advance()  # Skip opening quote
-        while self.char and self.char != '"':
-            string += self.char
-            self.advance()
-        self.advance()  # Skip closing quote
-        return String(string)
-
-    def advance(self):
+            self.move()
+        
+        return word
+    
+    def move(self):
         self.idx += 1
-        self.char = self.text[self.idx] if self.idx < len(self.text) else None
+        if self.idx < len(self.text):
+            self.char = self.text[self.idx]
+

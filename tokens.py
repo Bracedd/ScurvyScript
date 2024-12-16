@@ -2,21 +2,17 @@ class Token:
     def __init__(self, type, value):
         self.type = type
         self.value = value
-
+    
     def __repr__(self):
-        return f"{self.type}({self.value})"
-
-class Integer(Token):
+        return str(self.value)
+    
+class Doubloon(Token):
     def __init__(self, value):
-        super().__init__("INT", value)
+        super().__init__("DOUBLOON", value)
 
-class Float(Token):
+class Piece8(Token):
     def __init__(self, value):
-        super().__init__("FLT", value)
-
-class String(Token):
-    def __init__(self, value):
-        super().__init__("STR", value)
+        super().__init__("PIECE8", value)
 
 class Operation(Token):
     def __init__(self, value):
@@ -26,14 +22,15 @@ class Declaration(Token):
     def __init__(self, value):
         super().__init__("DECL", value)
 
-class Variable(Token):
+class Booty(Token):
     def __init__(self, value):
-        super().__init__("VAR", value)
+        super().__init__("BOOTY(?)", value) # Variable name, BOOTY, data type
+        # hoist ye_flag = 5 # BOOTY(?)
 
 class Boolean(Token):
     def __init__(self, value):
         super().__init__("BOOL", value)
-
+    
 class Comparison(Token):
     def __init__(self, value):
         super().__init__("COMP", value)
@@ -41,12 +38,4 @@ class Comparison(Token):
 class Reserved(Token):
     def __init__(self, value):
         super().__init__("RSV", value)
-
-class Print(Token):
-    def __init__(self, value):
-        super().__init__("PRINT", value)
-
-class While(Token):
-    def __init__(self, value):
-        super().__init__("WHILE", value)
 

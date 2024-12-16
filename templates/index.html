@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScurvyScript Terminal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏴‍☠️</text></svg">
 </head>
 <body>
     <div class="container">
@@ -21,34 +22,33 @@
             <div id="output">
                 <div class="intro">
                     <p>Welcome to ScurvyScript, ye scurvy dog!</p>
-                    <p>ScurvyScript be a pirate-themed programming language that'll make ye feel like ye're sailing the seven seas of code.</p>
-                    <p>Here be some basic commands to get ye started:</p>
+                    <p>ScurvyScript be a pirate-themed programming language, inspired by BASIC, that'll make ye feel like ye're sailing the seven seas of code.</p>
+                    <p>Here be some basic commands to get you started:</p>
                     <ul>
-                        <li><code>yeet</code>: Declare a variable, ye landlubber!</li>
-                        <li><code>print</code>: Show yer message to the crew!</li>
-                        <li><code>if</code>, <code>but_if</code>, <code>by_chance</code>: Make decisions like a true captain!</li>
-                        <li><code>with</code>, <code>or</code>, <code>nay</code>: Combine yer thoughts, matey!</li>
+                        <li><code>hoist</code>: Declare a variable, ye landlubber!</li>
+                        <li><code>parley</code>: Show yer message to the crew!</li>
+                        <li><code>if</code>, <code>elif</code>, <code>else</code>: Make decisions like a true captain!</li>
+                        <li><code>while</code>: Keep loopin' till ye find yer treasure!</li>
                     </ul>
                     <p>Now set sail and start coding, ye scurvy dog!</p>
                 </div>
             </div>
             <div id="input-line">
                 <span class="prompt">&gt;</span>
-                <input type="text" id="codeInput" autofocus>
+                <input type="text" id="command-input" autofocus>
             </div>
         </div>
         <div class="examples">
-            <h2>Example Programs</h2>
+            <h2>Example Commands</h2>
             <ul>
                 <li><a href="#" class="example-link" data-example="hello-world">Hello World</a></li>
                 <li><a href="#" class="example-link" data-example="arithmetic">Arithmetic Operations</a></li>
                 <li><a href="#" class="example-link" data-example="variables">Variables and Conditionals</a></li>
-                <li><a href="#" class="example-link" data-example="fibonacci">Fibonacci Sequence</a></li>
-                <li><a href="#" class="example-link" data-example="factorial">Factorial Calculation</a></li>
+                <li><a href="#" class="example-link" data-example="nested-if">If Statements</a></li>
             </ul>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
 

@@ -8,10 +8,11 @@ ScurvyScript be a dynamically typed, interpreted language designed for education
 
 ## Features
 
-*   **Slang:** ScurvyScript incorporates popular Gen Z slang into its keywords and syntax, makin' codin' as relatable as yer favorite meme.
-*   **High-Seas Theme:** From "yeet"ing variables to "plunder"ing data, the language be infused with the spirit of pirates and the open sea.
+*   **Pirate Theme:** From "hoist"ing variables to "parley"ing data, the language be infused with the spirit of pirates and the open sea.
 *   **Basic Arithmetic Operations:** ScurvyScript supports standard arithmetic operations (+, -, \*, /) with both integers and floats.
 *   **Extensible:** The interpreter is designed to be easily extended with new features and functionalities.
+*   **While Loops & Print Statemtnts:** The interpreter is designed to be easily extended with new features and functionalities.
+
 
 ## Try It Out
 

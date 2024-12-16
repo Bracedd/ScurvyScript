@@ -1,81 +1,159 @@
-from tokens import Declaration, Print, Reserved, Operation, Variable, Integer, Float, String, Boolean, Comparison
-
-class ParseError(Exception):
-    pass
-
+from tokens import Reserved
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.current = 0
+        self.idx = 0
+        self.token = self.tokens[self.idx]
 
-    def parse(self):
-        statements = []
-        while self.current < len(self.tokens):
-            statements.append(self.statement())
-        return statements
+    def factor(self):
+        if self.token.type == "DOUBLOON" or self.token.type == "PIECE8":
+            return self.token
+        elif self.token.value == "(":
+            self.move()
+            expression = self.boolean_expression()
+            return expression
+        elif self.token.value == "not":
+            operator = self.token
+            self.move()
+            output = [operator, self.boolean_expression()]
+            return output
+        
+        elif self.token.type.startswith("BOOTY"):
+            return self.token
+        elif self.token.value == "+" or self.token.value == "-":
+            operator = self.token
+            self.move()
+            operand = self.boolean_expression()
 
-    def statement(self):
-        token = self.peek()
-        if isinstance(token, Declaration):
-            return self.declaration()
-        elif isinstance(token, Print):
-            return self.print_statement()
-        elif isinstance(token, Reserved) and token.value == "if":
-            return self.if_statement()
-        else:
-            raise ParseError(f"Unexpected token: {token}")
+            return [operator, operand]
+    
+    def term(self):
+        left_node = self.factor()
+        self.move()
+        
+        while self.token.value == "*" or self.token.value == "/":
+            operator = self.token
+            self.move()
+            right_node = self.factor()
+            self.move()
 
-    def declaration(self):
-        self.consume(Declaration)
-        variable = self.consume(Variable)
-        self.consume(Operation, "=")
-        value = self.expression()
-        return ("declaration", variable, value)
+            left_node = [left_node, operator, right_node]
 
-    def print_statement(self):
-        self.consume(Print)
-        self.consume(Operation, "(")
-        value = self.expression()
-        self.consume(Operation, ")")
-        return ("print", value)
+        return left_node
 
     def if_statement(self):
-        self.consume(Reserved, "if")
-        condition = self.expression()
-        self.consume(Reserved, "bet")
-        action = self.statement()
-        return ("if", condition, action)
+        self.move()
+        condition = self.boolean_expression()
+
+        if self.token.value == "do":
+            self.move()
+            action = self.statement()
+        
+            return condition, action
+        elif self.tokens[self.idx-1].value == "do":
+            action = self.statement()
+            return condition, action
+
+    def if_statements(self):
+        conditions = []
+        actions = []
+        if_statement = self.if_statement()
+
+        conditions.append(if_statement[0])
+        actions.append(if_statement[1])
+
+        while self.token.value == "elif":
+            if_statement = self.if_statement()
+            conditions.append(if_statement[0])
+            actions.append(if_statement[1])
+
+        if self.token.value == "else":
+            self.move()
+            self.move()
+            else_action = self.statement()
+
+            return [conditions, actions, else_action]
+
+        return [conditions, actions]
+    
+    def while_statement(self):
+        self.move()
+        condition = self.boolean_expression()
+        
+        if self.token.value == "do":
+            self.move()
+            action = self.statement()
+            return [condition, action]
+        
+        elif self.tokens[self.idx-1].value == "do":
+            action = self.statement()
+            return [condition, action]
+
+    def comp_expression(self):
+        left_node = self.expression()
+        while self.token.type == "COMP":
+            operator = self.token
+            self.move()
+            right_node = self.expression()
+            left_node = [left_node, operator, right_node]
+        
+        return left_node
+
+    def boolean_expression(self):
+        left_node = self.comp_expression()
+
+        while self.token.value == "and" or self.token.value == "or":
+            operator = self.token
+            self.move()
+            right_node = self.comp_expression()
+            left_node = [left_node, operator, right_node]
+
+        return left_node
 
     def expression(self):
-        return self.comparison()
+        left_node = self.term()
+        while self.token.value == "+" or self.token.value == "-":
+            operator = self.token
+            self.move()
+            right_node = self.term()
+            left_node = [left_node, operator, right_node]
 
-    def comparison(self):
-        left = self.primary()
-        while self.match(Comparison):
-            operator = self.advance()
-            right = self.primary()
-            left = ("binary_op", operator, left, right)
-        return left
+        return left_node
+    
+    def booty(self):
+        if self.token.type.startswith("BOOTY"):
+            return self.token
+    
+    def statement(self):
+        if self.token.type == "DECL":
+            # Variable assignment
+            self.move()
+            left_node = self.booty()
+            self.move()
+            if self.token.value == "=":
+                operation = self.token
+                self.move()
+                right_node = self.boolean_expression()
 
-    def primary(self):
-        token = self.peek()
-        if isinstance(token, (Integer, Float, String, Variable)):
-            return ("literal", self.advance())
-        raise ParseError(f"Unexpected token: {token}")
+                return [left_node, operation, right_node]
 
-    def match(self, type, value=None):
-        token = self.peek()
-        return isinstance(token, type) and (value is None or token.value == value)
+        elif self.token.type == "DOUBLOON" or self.token.type == "PIECE8" or self.token.type == "OP" or self.token.value == "not":
+            # Arithmetic expression
+            return self.boolean_expression()
+        
+        elif self.token.value == "if":
+            return [self.token, self.if_statements()]
+        elif self.token.value == "while":
+            return [self.token, self.while_statement()]
+        elif self.token.value == "parley":
+            self.move()
+            return [Reserved("parley"), self.boolean_expression()]
+        
+    def parse(self):
+        return self.statement()
 
-    def consume(self, type, value=None):
-        if self.match(type, value):
-            return self.advance()
-        raise ParseError(f"Expected {type.__name__} with value {value}, got {self.peek()}")
+    def move(self):
+        self.idx += 1
+        if self.idx < len(self.tokens):
+            self.token = self.tokens[self.idx]
 
-    def advance(self):
-        token = self.peek()
-        self.current += 1
-        return token
-
-    def peek(self):
-        return self.tokens[self.current] if self.current < len(self.tokens) else None
