@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScurvyScript Terminal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ScurvyScript Terminal</h1>
+            <div class="buttons">
+                <a href="#" id="docsButton" class="button">Docs</a>
+                <a href="#" id="clearButton" class="button">Clear Shell</a>
+                <a href="https://github.com/divpreeet/scurvyscript" target="_blank" class="button">GitHub</a>
+            </div>
+        </div>
+        <div id="terminal">
+            <div id="output">
+                <div class="intro">
+                    <p>Welcome to ScurvyScript, ye scurvy dog!</p>
+                    <p>ScurvyScript be a pirate-themed programming language that'll make ye feel like ye're sailing the seven seas of code.</p>
+                    <p>Here be some basic commands to get ye started:</p>
+                    <ul>
+                        <li><code>yeet</code>: Declare a variable, ye landlubber!</li>
+                        <li><code>print</code>: Show yer message to the crew!</li>
+                        <li><code>if</code>, <code>but_if</code>, <code>by_chance</code>: Make decisions like a true captain!</li>
+                        <li><code>with</code>, <code>or</code>, <code>nay</code>: Combine yer thoughts, matey!</li>
+                    </ul>
+                    <p>Now set sail and start coding, ye scurvy dog!</p>
+                </div>
+            </div>
+            <div id="input-line">
+                <span class="prompt">&gt;</span>
+                <input type="text" id="codeInput" autofocus>
+            </div>
+        </div>
+        <div class="examples">
+            <h2>Example Programs</h2>
+            <ul>
+                <li><a href="#" class="example-link" data-example="hello-world">Hello World</a></li>
+                <li><a href="#" class="example-link" data-example="arithmetic">Arithmetic Operations</a></li>
+                <li><a href="#" class="example-link" data-example="variables">Variables and Conditionals</a></li>
+                <li><a href="#" class="example-link" data-example="fibonacci">Fibonacci Sequence</a></li>
+                <li><a href="#" class="example-link" data-example="factorial">Factorial Calculation</a></li>
+            </ul>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+

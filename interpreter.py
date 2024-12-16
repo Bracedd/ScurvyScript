@@ -1,125 +1,104 @@
-from tokens import Integer, Float, Reserved, Print, String, Variable, Declaration
+from tokens import Integer, Float, String, Operation, Boolean, Comparison, Variable, Declaration, Print
+
+class InterpreterError(Exception):
+    pass
 
 class Interpreter:
-    def __init__(self, tree, base):
+    def __init__(self, tree):
         self.tree = tree
-        self.data = base
+        self.variables = {}
 
-    def read_INT(self, value):
-        return int(value)
-    
-    def read_FLT(self, value):
-        return float(value)
-    
-    def read_STR(self, value):
-        return str(value)
-    
-    def read_VAR(self, id):
-        variable = self.data.read(id)
-        return variable.value
+    def interpret(self):
+        results = []
+        for statement in self.tree:
+            result = self.execute(statement)
+            if result is not None:
+                results.append(result)
+        return results
 
-    def compute_bin(self, left, op, right):
-        if isinstance(left, Variable):
-            left = self.read_VAR(left.value)
-        if isinstance(right, Variable):
-            right = self.read_VAR(right.value)
+    def execute(self, node):
+        if isinstance(node, tuple):
+            node_type = node[0]
+            if node_type == 'declaration':
+                return self.handle_declaration(node)
+            elif node_type == 'print':
+                return self.handle_print(node)
+            elif node_type == 'if':
+                return self.handle_if(node)
+            elif node_type == 'while':
+                return self.handle_while(node)
+            elif node_type == 'binary_op':
+                return self.handle_binary_op(node)
+            elif node_type == 'unary_op':
+                return self.handle_unary_op(node)
+            elif node_type == 'literal':
+                return self.handle_literal(node)
+            elif node_type == 'variable':
+                return self.handle_variable(node)
+        raise InterpreterError(f"Unknown node type: {node}")
 
-        if op.value == "+":
-            output = left + right
-        elif op.value == "-":
-            output = left - right
-        elif op.value == "*":
-            output = left * right
-        elif op.value == "/":
-            output = left / right
-        elif op.value == ">":
-            output = 1 if left > right else 0
-        elif op.value == ">=":
-            output = 1 if left >= right else 0
-        elif op.value == "<":
-            output = 1 if left < right else 0
-        elif op.value == "<=":
-            output = 1 if left <= right else 0
-        elif op.value == "?=":
-            output = 1 if left == right else 0
-        elif op.value == "and":
-            output = 1 if left and right else 0
-        elif op.value == "or":
-            output = 1 if left or right else 0
+    def handle_declaration(self, node):
+        _, var, value = node
+        self.variables[var.value] = self.execute(value)
 
-        return Integer(output) if isinstance(left, int) and isinstance(right, int) else Float(output)
-        
-    def compute_unary(self, operator, operand):
-        if isinstance(operand, Variable):
-            operand = self.read_VAR(operand.value)
+    def handle_print(self, node):
+        _, expr = node
+        value = self.execute(expr)
+        print(value)
+        return value
 
-        if operator.value == "+":
-            output = +operand
-        elif operator.value == "-":
-            output = -operand
-        elif operator.value == "not":
-            output = 1 if not operand else 0
-        
-        return Integer(output) if isinstance(operand, int) else Float(output)
+    def handle_if(self, node):
+        _, conditions = node
+        for condition, action in conditions:
+            if self.execute(condition):
+                return self.execute(action)
+        return None
 
-    def interpret(self, tree=None):
-        if tree is None:
-            tree = self.tree
+    def handle_while(self, node):
+        _, condition, body = node
+        results = []
+        while self.execute(condition):
+            results.append(self.execute(body))
+        return results
 
-        if isinstance(tree, list):
-            if isinstance(tree[0], Print):
-                value = self.interpret(tree[1])
-                if isinstance(value, (Integer, Float, String)):
-                    print(value.value)
-                else:
-                    print(value)
-                return value
-            elif isinstance(tree[0], Declaration):
-                # Handle variable declaration
-                var_name = tree[1].value
-                var_value = self.interpret(tree[3])
-                self.data.write(Variable(var_name), var_value)
-                return self.data.read_all()
-            elif isinstance(tree[0], Reserved):
-                if tree[0].value == "if":
-                    for idx, condition in enumerate(tree[1][0]):
-                        evaluation = self.interpret(condition)
-                        if evaluation == 1:
-                            return self.interpret(tree[1][1][idx])
-                    
-                    if len(tree[1]) == 3:
-                        return self.interpret(tree[1][2])
-                    
-                    else:
-                        return
-                elif tree[0].value == "while":
-                    condition = self.interpret(tree[1][0])
-                    
-                    while condition == 1:
-                        # Doing the action
-                        self.interpret(tree[1][1])
+    def handle_binary_op(self, node):
+        _, op, left, right = node
+        left_val = self.execute(left)
+        right_val = self.execute(right)
+        if op.value == '+':
+            return left_val + right_val
+        if op.value == '-':
+            return left_val - right_val
+        if op.value == '*':
+            return left_val * right_val
+        if op.value == '/':
+            if right_val == 0:
+                raise InterpreterError("Division by zero")
+            return left_val / right_val
+        raise InterpreterError(f"Unknown operator: {op.value}")
 
-                        # Checking the condition
-                        condition = self.interpret(tree[1][0])
-                    
-                    return
+    def handle_unary_op(self, node):
+        _, op, expr = node
+        value = self.execute(expr)
+        if op.value == '-':
+            return -value
+        if op.value == 'nay':
+            return not value
+        raise InterpreterError(f"Unknown unary operator: {op.value}")
 
-        # Unary operation            
-        if isinstance(tree, list) and len(tree) == 2:
-            expression = tree[1]
-            if isinstance(expression, list):
-                expression = self.interpret(expression)
-            return self.compute_unary(tree[0], expression)
-        
-        # No operation
-        elif not isinstance(tree, list):
-            if isinstance(tree, Variable):
-                return self.read_VAR(tree.value)
-            return tree
-        
-        else:
-            # Binary operation
-            left_node = self.interpret(tree[0])
-            right_node = self.interpret(tree[2])
-            return self.compute_bin(left_node, tree[1], right_node)
+    def handle_literal(self, node):
+        _, token = node
+        if isinstance(token, Integer):
+            return int(token.value)
+        if isinstance(token, Float):
+            return float(token.value)
+        if isinstance(token, String):
+            return token.value
+        if isinstance(token, Boolean):
+            return 1 if token.value == 'aye' else 0
 
+    def handle_variable(self, node):
+        _, var = node
+        if var.value not in self.variables:
+            raise InterpreterError(f"Undefined variable: {var.value}")
+        return self.variables[var.value]
