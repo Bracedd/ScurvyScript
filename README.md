@@ -16,5 +16,5 @@ ScurvyScript be a dynamically typed, interpreted language designed for education
 
 ## Try It Out
 
-Well not yet, lemme work on the web app for the project...
+[link](https://scurvyscript.onrender.com/)
 
