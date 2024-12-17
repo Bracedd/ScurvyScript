@@ -16,5 +16,5 @@ ScurvyScript be a dynamically typed, interpreted language designed for education
 
 ## Try It Out
 
-[ScurvyScript Web App]([https://scurvy-script.vercel.app/])
+[ScurvyScript Web App](https://scurvy-script.vercel.app/)
 
